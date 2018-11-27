@@ -1,5 +1,27 @@
 apply plugin: 'com.android.application'
-apply from: 'buildscripts/jacoco.gradle'
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = '0.8.2'
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir: project.buildDir, includes: [
+            'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+    ])
+}
 
 android {
     compileSdkVersion 28
@@ -33,7 +55,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation ('com.squareup.picasso:picasso:2.71828') {
+        exclude group: 'com.android.support'
+        exclude module: ['exifInterface', 'support-annotations']
+    }
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
