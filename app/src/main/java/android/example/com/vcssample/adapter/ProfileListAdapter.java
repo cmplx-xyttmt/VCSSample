@@ -1,9 +1,10 @@
-package android.example.com.vcssample;
+package android.example.com.vcssample.adapter;
 
 import android.content.Context;
+import android.example.com.vcssample.R;
+import android.example.com.vcssample.model.GithubUser;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +12,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.LinkedList;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.ProfileViewHolder> {
-    private final LinkedList<Profile> mProfileList;
+    private final ArrayList<GithubUser> mProfileList;
     private LayoutInflater mInflater;
 
 
-    ProfileListAdapter(Context context, List<Profile> profileList) {
+    public ProfileListAdapter(Context context, List<GithubUser> profileList) {
         mInflater = LayoutInflater.from(context);
-        mProfileList = (LinkedList<Profile>) profileList;
+        mProfileList = (ArrayList<GithubUser>) profileList;
     }
 
     @NonNull
@@ -33,8 +36,8 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
-        Profile profile = mProfileList.get(position);
-        holder.mProfileImage.setImageResource(R.drawable.profile_pic);
+        GithubUser profile = mProfileList.get(position);
+        Picasso.get().load(profile.getAvatarUrl()).into(holder.mProfileImage);
         holder.mProfileUsername.setText(profile.getUsername());
     }
 

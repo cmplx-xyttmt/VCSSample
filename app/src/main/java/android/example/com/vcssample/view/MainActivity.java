@@ -1,6 +1,7 @@
-package android.example.com.vcssample;
+package android.example.com.vcssample.view;
 
 import android.content.Intent;
+import android.example.com.vcssample.R;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
