@@ -1,5 +1,7 @@
 package android.example.com.vcssample;
 
+import android.example.com.vcssample.model.SomeRandomClass;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,6 +14,7 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
+        SomeRandomClass someRandomClass = new SomeRandomClass("Isaac");
+        assertEquals(someRandomClass.getName(), "Isaac");
     }
 }

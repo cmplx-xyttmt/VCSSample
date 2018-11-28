@@ -5,11 +5,24 @@ jacoco {
     toolVersion = '0.8.2'
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+android.testOptions {
+
+    unitTests.all {
+
+        jacoco {
+            includeNoLocationClasses = false
+        }
+    }
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: 'test') {
+    description = 'Generate JaCoCo coverage reports'
+    group       = 'Reporting'
 
     reports {
         xml.enabled = true
         html.enabled = true
+        html.destination file("${buildDir}/jacocoHtml")
     }
 
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
@@ -18,8 +31,9 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
 
     sourceDirectories = files([mainSrc])
     classDirectories = files([debugTree])
-    executionData = fileTree(dir: project.projectDir, includes: [
-            'build/jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+    executionData = fileTree(
+            dir: project.projectDir,
+            include: ['**/*.exec', '**/*.ec'
     ])
 }
 
