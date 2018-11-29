@@ -36,7 +36,7 @@ jobs:
           command: |
             python .circleci/get_artifact_path.py
             artifact_path="$(cat artifact_path)"
-            gsutil -m cp -n -r gs://${artificat_path}* /root/repo/firebase/ || true
+            gsutil -m cp -n -r ${GOOGLE_PROJECT_ID} gs://${artificat_path}/walleye-26-en-portrait firebase || true
       - run:
           name: Print firebase error results
           when: on_fail
@@ -84,11 +84,31 @@ jobs:
 #            export JACOCO_SOURCE_PATH=app/src/main/java
 #            ./cc-test-reporter format-coverage app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml --coverage-input-type jacoco
 #            ./cc-test-reporter upload-coverage
-      - store_artifacts:
-          path: app/build/reports
-          destination: reports
-      - store_test_results:
-          path: app/build/test-results
+      - run:
+          name: Download dependencies
+          command: ./gradlew androidDependencies
+      - run:
+          name: Move Firebase Coverage Report
+          command: |
+            mkdir -p app/build/outputs/code-coverage/connected
+            cp walleye-26-en-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/coverage.ec
+      - run:
+          name: Code Climate Test Setup
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Code Climate Pretest
+          command: ./cc-test-reporter before-build
+      - run:
+          name: Generate JaCoCo report
+          command: ./gradlew jacocoTestReport
+      - run:
+          name: Upload coverage to code climate
+          command: |
+            export JACOCO_SOURCE_PATH=app/src/main/java
+            ./cc-test-reporter format-coverage app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml -t jacoco
+            ./cc-test-reporter upload-coverage
 workflows:
   version: 2
   test:
